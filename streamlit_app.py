@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 import requests
 import streamlit as st
 from urllib.parse import urlencode
@@ -8,6 +9,8 @@ st.set_page_config(page_title='Attendance Dashboard', layout='wide')
 
 if 'api_base_url' not in st.session_state:
     st.session_state.api_base_url = ''
+
+DEFAULT_API = os.environ.get('API_BASE_URL', '')
 
 def validate_api_url(url: str) -> str:
     if not url:
@@ -39,11 +42,16 @@ def api_get(path: str):
     if not st.session_state.api_base_url:
         raise ValueError('API base URL is not configured')
     url = f"{st.session_state.api_base_url}{path}"
-    resp = requests.get(url)
-    data = resp.json()
-    if not resp.ok:
-        raise requests.HTTPError(json.dumps(data))
-    return data
+    try:
+        resp = requests.get(url, timeout=10)
+        data = resp.json()
+        if not resp.ok:
+            raise requests.HTTPError(json.dumps(data))
+        return data
+    except requests.exceptions.ConnectionError as e:
+        raise ConnectionError(f"Unable to connect to API at {st.session_state.api_base_url}: {e}")
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
 
 @st.cache_data
 def api_post(path: str, payload: dict):
@@ -51,18 +59,23 @@ def api_post(path: str, payload: dict):
         raise ValueError('API base URL is not configured')
     url = f"{st.session_state.api_base_url}{path}"
     headers = {'Content-Type': 'application/json'}
-    resp = requests.post(url, headers=headers, json=payload)
-    data = resp.json()
-    if not resp.ok:
-        raise requests.HTTPError(json.dumps(data))
-    return data
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=10)
+        data = resp.json()
+        if not resp.ok:
+            raise requests.HTTPError(json.dumps(data))
+        return data
+    except requests.exceptions.ConnectionError as e:
+        raise ConnectionError(f"Unable to connect to API at {st.session_state.api_base_url}: {e}")
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
 
 st.title('Serverless Attendance System')
 st.write('Use this dashboard to signup, login, mark attendance, upload photos, and generate reports.')
 
 with st.sidebar:
     st.header('Configuration')
-    api_url = st.text_input('API Base URL', value=st.session_state.api_base_url or 'http://127.0.0.1:3000', placeholder='http://127.0.0.1:3000')
+    api_url = st.text_input('API Base URL', value=st.session_state.api_base_url or DEFAULT_API, placeholder='https://your-api.example.com')
     if st.button('Save API URL'):
         set_api_url(api_url)
         st.success('API URL saved')

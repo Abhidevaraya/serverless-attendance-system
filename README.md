@@ -76,6 +76,8 @@ streamlit run streamlit_app.py
 
 Enter your deployed API Gateway endpoint in the sidebar, then use the signup, login, attendance, photo upload, and report sections.
 
+If you deploy to Streamlit Cloud, set an environment variable named `API_BASE_URL` (or add it in the app's Settings → Environment variables) to your deployed API Gateway URL (for example `https://abcd1234.execute-api.us-east-1.amazonaws.com/Prod`). The app will read that value automatically on startup and avoid trying to call `127.0.0.1`.
+
 ## Notes
 
 - The DynamoDB table uses a single-table design with `PK` and `SK`.
