@@ -1,0 +1,17 @@
+{
+  "SignupFunction": {
+    "LOCAL_MODE": "true"
+  },
+  "LoginFunction": {
+    "LOCAL_MODE": "true"
+  },
+  "AttendanceFunction": {
+    "LOCAL_MODE": "true"
+  },
+  "PhotoUploadFunction": {
+    "LOCAL_MODE": "true"
+  },
+  "ReportsFunction": {
+    "LOCAL_MODE": "true"
+  }
+}

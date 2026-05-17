@@ -1,0 +1,20 @@
+{
+  "name": "serverless-attendance-system",
+  "version": "0.1.0",
+  "description": "Serverless attendance backend using AWS Lambda, API Gateway, DynamoDB, and S3.",
+  "main": "src/handlers/signup.js",
+  "scripts": {
+    "deploy": "sam build && sam deploy --guided",
+    "start": "sam local start-api",
+    "local-api": "PATH=$PATH:/home/codespace/.local/bin sam local start-api --env-vars local-env.json --port 3000",
+    "serve-website": "cd website && python3 -m http.server 8080",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.432.0",
+    "@aws-sdk/lib-dynamodb": "^3.432.0",
+    "@aws-sdk/client-s3": "^3.432.0",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.0"
+  }
+}

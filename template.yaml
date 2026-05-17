@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Attendance System
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref AttendanceTable
+        PHOTO_BUCKET: !Ref PhotoBucket
+Resources:
+  AttendanceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: AttendanceSystemTable
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+  PhotoBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-attendance-photos"
+  SignupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/signup.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AttendanceTable
+      Events:
+        SignupApi:
+          Type: Api
+          Properties:
+            Path: /signup
+            Method: post
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/login.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref AttendanceTable
+      Events:
+        LoginApi:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+  AttendanceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/attendance.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AttendanceTable
+      Events:
+        AttendanceApi:
+          Type: Api
+          Properties:
+            Path: /attendance
+            Method: post
+  PhotoUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/photo.handler
+      Policies:
+        - S3WritePolicy:
+            BucketName: !Ref PhotoBucket
+      Events:
+        UploadPhotoApi:
+          Type: Api
+          Properties:
+            Path: /photos
+            Method: post
+  ReportsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/reports.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref AttendanceTable
+      Events:
+        ReportsApi:
+          Type: Api
+          Properties:
+            Path: /reports
+            Method: get
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL for the attendance system
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  TableName:
+    Description: DynamoDB table used for attendance data
+    Value: !Ref AttendanceTable
+  PhotoBucketName:
+    Description: S3 bucket used for attendance photos
+    Value: !Ref PhotoBucket

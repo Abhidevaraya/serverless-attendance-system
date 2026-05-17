@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serverless Attendance System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Serverless Attendance System</h1>
+    <p>Login, mark attendance, upload photos, and generate reports.</p>
+  </header>
+
+  <main>
+    <section class="panel" id="config-panel">
+      <h2>API Configuration</h2>
+      <label>
+        Select API Base URL
+        <select id="apiUrlSelect">
+          <option value="">Custom endpoint</option>
+          <option value="http://127.0.0.1:3000">Local endpoint</option>
+        </select>
+      </label>
+      <label>
+        API Base URL
+        <input id="apiUrl" type="text" placeholder="http://127.0.0.1:3000" value="http://127.0.0.1:3000" />
+      </label>
+      <button id="setApiUrl">Set API URL</button>
+      <p class="note">Select a saved endpoint or paste your deployed API Gateway URL.</p>
+    </section>
+
+    <section class="panel" id="auth-panel">
+      <h2>Signup</h2>
+      <form id="signupForm">
+        <div class="inline-field">
+          <input type="text" id="signupRollNo" placeholder="Roll number only" required />
+          <span class="suffix">@anurag.edu.in</span>
+        </div>
+        <input type="text" id="signupName" placeholder="Name" required />
+        <input type="password" id="signupPassword" placeholder="Password" required />
+        <button type="submit">Signup</button>
+      </form>
+      <p class="note">Only `rollno@anurag.edu.in` is accepted for signup.</p>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="inline-field">
+          <input type="text" id="loginRollNo" placeholder="Roll number only" required />
+          <span class="suffix">@anurag.edu.in</span>
+        </div>
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p class="note">Use your Anurag roll number to login.</p>
+    </section>
+
+    <section class="panel" id="attendance-panel">
+      <h2>Mark Attendance</h2>
+      <form id="attendanceForm">
+        <input type="email" id="attendanceEmail" placeholder="Email" required />
+        <select id="attendanceStatus" required>
+          <option value="">Select status</option>
+          <option value="present">Present</option>
+          <option value="absent">Absent</option>
+          <option value="late">Late</option>
+        </select>
+        <input type="datetime-local" id="attendanceTimestamp" />
+        <input type="text" id="attendanceLocation" placeholder="Location (optional)" />
+        <textarea id="attendanceNotes" placeholder="Notes (optional)"></textarea>
+        <button type="submit">Submit Attendance</button>
+      </form>
+    </section>
+
+    <section class="panel" id="photo-panel">
+      <h2>Upload Photo</h2>
+      <form id="photoForm">
+        <input type="email" id="photoEmail" placeholder="Email" required />
+        <input type="text" id="photoFileName" placeholder="Photo file name" required />
+        <input type="file" id="photoFile" accept="image/*" required />
+        <button type="submit">Upload Photo</button>
+      </form>
+    </section>
+
+    <section class="panel" id="reports-panel">
+      <h2>Attendance Reports</h2>
+      <form id="reportsForm">
+        <input type="email" id="reportEmail" placeholder="Email" required />
+        <input type="date" id="reportStartDate" />
+        <input type="date" id="reportEndDate" />
+        <button type="submit">Generate Report</button>
+      </form>
+    </section>
+
+    <section class="panel" id="output-panel">
+      <h2>Output</h2>
+      <pre id="output"></pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
